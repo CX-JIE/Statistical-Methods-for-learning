@@ -13,6 +13,8 @@ The HTML is produced by nbconvert's HTMLExporter, i.e. the same exporter as
 
 from __future__ import annotations
 
+import re
+import time
 from html.parser import HTMLParser
 from pathlib import Path
 
@@ -111,6 +113,43 @@ def html_table_to_markdown(markup: str) -> str:
     return "\n".join(lines)
 
 
+_STYLER_ID = re.compile(r"T_[0-9a-f]{5,}")
+
+
+def stabilise_cell_ids(nb: nbformat.NotebookNode) -> None:
+    """Fix the id of every cell.
+
+    nbformat gives a cell without an id a random one, and the HTML exporter writes that id into
+    the page, so two runs on identical data would otherwise differ. Numbering them in order makes
+    the rendered report reproducible byte for byte.
+    """
+    for index, cell in enumerate(nb.cells):
+        cell["id"] = f"cp2-cell-{index:03d}"
+
+
+def stabilise_styler_ids(nb: nbformat.NotebookNode) -> int:
+    """Give every pandas Styler table a fixed id.
+
+    pandas draws a random id (for example `T_54bf9`) for each styled table, which would make the
+    rendered HTML differ between two runs on identical data. Replacing them with ids numbered in
+    cell order makes the report reproducible byte for byte.
+    """
+    counter = 0
+    for cell in nb.cells:
+        if cell.cell_type != "code":
+            continue
+        for output in cell.get("outputs", []):
+            data = output.get("data", {})
+            if "text/html" not in data:
+                continue
+            markup = data["text/html"]
+            for old in dict.fromkeys(_STYLER_ID.findall(markup)):
+                counter += 1
+                markup = markup.replace(old, f"T_cp2_{counter:03d}")
+            data["text/html"] = markup
+    return counter
+
+
 def notebook_to_markdown(nb: nbformat.NotebookNode) -> str:
     blocks: list[str] = [PREAMBLE]
     figure = 0
@@ -148,8 +187,10 @@ def notebook_to_markdown(nb: nbformat.NotebookNode) -> str:
 
 
 def main() -> None:
+    start = time.time()
     OUT.mkdir(exist_ok=True)
     nb = nbformat.read(NOTEBOOK, as_version=4)
+    stabilise_cell_ids(nb)
     client = NotebookClient(
         nb,
         timeout=1800,
@@ -157,13 +198,18 @@ def main() -> None:
         resources={"metadata": {"path": str(ROOT)}},
     )
     client.execute()
+    tables = stabilise_styler_ids(nb)
 
     html, _ = HTMLExporter(template_name="lab").from_notebook_node(nb)
     (OUT / "checkpoint2.html").write_text(html, encoding="utf-8")
 
     markdown = notebook_to_markdown(nb)
     (OUT / "report.md").write_text(markdown, encoding="utf-8")
-    print(f"wrote output/checkpoint2.html and output/report.md ({len(markdown):,} characters)")
+    print(
+        f"wrote output/checkpoint2.html and output/report.md "
+        f"({len(markdown):,} characters, {tables} styled tables) in "
+        f"{(time.time() - start) / 60:.1f} minutes"
+    )
 
 
 if __name__ == "__main__":

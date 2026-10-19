@@ -732,5 +732,4 @@ Checkpoint 3.
 Python 3.12.15
 pandas 3.0.6 | numpy 2.5.4 | scikit-learn 1.9.1
 pygam 0.12.0 | matplotlib 3.11.2
-Notebook executed in 3.5 minutes
 ```
