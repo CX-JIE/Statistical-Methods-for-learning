@@ -1,9 +1,14 @@
 /data
 output/*
 !output/checkpoint2.html
+!output/report.md
 !output/cp2_final_model.joblib
 !output/cp2_oof_predictions.csv
 !output/cp2_model_comparison.csv
+!output/cp2_lasso_coefficients.png
+!output/cp2_gam_partial_effects.png
+!output/cp2_roc_oof.png
+!output/cp2_fold_auc.png
 .pixi/
 __pycache__/
 .ipynb_checkpoints/

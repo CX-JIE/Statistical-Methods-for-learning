@@ -18,4 +18,4 @@ nbformat = "*"
 ipykernel = "*"
 
 [tasks]
-checkpoint2 = "jupyter nbconvert --to html --execute checkpoint2.ipynb --output-dir output --ExecutePreprocessor.timeout=1800"
+checkpoint2 = "python build_report.py"
