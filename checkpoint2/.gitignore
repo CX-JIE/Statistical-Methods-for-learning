@@ -1,0 +1,9 @@
+/data
+output/*
+!output/checkpoint2.html
+!output/cp2_final_model.joblib
+!output/cp2_oof_predictions.csv
+!output/cp2_model_comparison.csv
+.pixi/
+__pycache__/
+.ipynb_checkpoints/
