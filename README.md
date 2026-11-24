@@ -5,18 +5,26 @@ This repository is for BIOSTAT 707 programming assignments. Each checkpoint live
 ```
 .
 ├── README.md
-├── checkpoint1/
-└── checkpoint2/
+├── .gitignore              (ignores data/, .pixi/ and .DS_Store)
+├── pixi.toml / pixi.lock   (root task: pixi run --locked checkpoint3)
+├── checkpoint1/            Checkpoint 1: data cleaning and exploration of set-a
+├── checkpoint2/            Checkpoint 2: three models compared by cross-validation on set-a
+└── checkpoint3/            Checkpoint 3: the Checkpoint 2 final model evaluated on set-b and set-c
 ```
 
 Everything belonging to a checkpoint lives inside that checkpoint's folder: its code or notebook,
-its `pixi.toml`/`pixi.lock`, and its own `output/` with the written report. Nothing outside the
-folder is needed except the `data/` directory, which is not committed.
+its `pixi.toml`/`pixi.lock`, and its own `output/` with the written report. Checkpoints 1 and 2 need
+nothing outside their folder except the `data/` directory, which is not committed. Checkpoint 3 also
+uses the committed Checkpoint 2 outputs (the saved final model and the out-of-fold predictions) and
+Checkpoint 2's table-building code, as the checklist requires; see the Checkpoint 3 section below.
+
+Each written report begins with an AI-use statement and follows the checklist section by section.
 
 | Checkpoint | Folder | Written report | Command |
 | --- | --- | --- | --- |
 | 1 | `checkpoint1/` | `checkpoint1/output/` (`checkpoint1_writeup.md` plus tables) | `cd checkpoint1 && pixi run --locked checkpoint1` |
 | 2 | `checkpoint2/` | `checkpoint2/output/checkpoint2.html`, readable copy in `checkpoint2/output/report.md` | `cd checkpoint2 && pixi run --locked checkpoint2` |
+| 3 | `checkpoint3/` | `checkpoint3/output/checkpoint3.html`, readable copy in `checkpoint3/output/report.md` | `pixi run --locked checkpoint3` (repository root) or `cd checkpoint3 && pixi run --locked checkpoint3` |
 
 ## Checkpoint 1
 
@@ -52,3 +60,54 @@ What the run writes under `checkpoint2/output/`:
 * `cp2_lasso_coefficients.png`, `cp2_gam_partial_effects.png`, `cp2_roc_oof.png`, `cp2_fold_auc.png` — figures 1 to 4 (committed, because `report.md` links to them).
 
 Runtime is a few minutes (roughly 4 to 7 minutes depending on the machine and load) on an Apple silicon laptop, most of it in the inner cross-validation loops for the three models. The code reads only set-a; set-b and set-c are never opened. `cp2_lib.py` holds the shared functions (data preparation, folds, models, plots), `checkpoint2.ipynb` is the report that calls them, and `build_report.py` executes the notebook and writes the two report files. Random seeds are fixed and the cell and table ids are made deterministic, so running the task twice gives byte-identical `checkpoint2.html` and `report.md` and leaves `git status` clean.
+
+## Checkpoint 3
+
+All Checkpoint 3 files are in `checkpoint3/`. From that folder, run:
+
+```bash
+cd checkpoint3
+pixi run --locked checkpoint3
+```
+
+or, equivalently, from the repository root (the root `pixi.toml` runs the same script inside
+`checkpoint3/` with the same locked environment):
+
+```bash
+pixi run --locked checkpoint3
+```
+
+This requires the following data, either inside `checkpoint3/data/` or in `data/` at the repository
+root (neither is committed; `checkpoint3/data/` is used if both exist):
+
+```
+data/set-a/            4000 record files (used only to rebuild the set-a table for the SOFA/SAPS-I
+                       probability maps and the Model 2 comparison curve; the final model is not refitted)
+data/set-b/            4000 record files
+data/set-c/            4000 record files
+data/Outcomes-a.txt
+data/Outcomes-b.txt
+data/Outcomes-c.txt
+```
+
+Checkpoint 3 evaluates the Checkpoint 2 final model without refitting it. It loads
+`../checkpoint2/output/cp2_final_model.joblib` and reads `../checkpoint2/output/cp2_model_comparison.csv`
+and `../checkpoint2/output/cp2_oof_predictions.csv` (all three committed), and it imports
+`../checkpoint2/cp2_lib.py` so that set-b and set-c go through exactly the same table-building code as
+set-a. The pixi environment pins the same scikit-learn version (1.9.1) that saved the model, plus
+`statsmodels` (calibration intercept/slope, loess) and `shap` (SHAP values).
+
+The pixi task runs `build_report.py`, which executes `checkpoint3.ipynb` once and writes
+`output/checkpoint3.html` (the report) and `output/report.md` (the same text as Markdown). Other files
+under `checkpoint3/output/`:
+
+* `cp3_predictions_bc.csv` — final-model risk, SAPS-I, SOFA and outcome for every set-b and set-c stay.
+* `cp3_discrimination.csv`, `cp3_calibration.csv`, `cp3_subgroups_b.csv` — tables behind the report.
+* `cp3_roc_bc.png`, `cp3_pr_curve_b.png`, `cp3_calibration.png`, `cp3_decision_curve_b.png`,
+  `cp3_shap_importance.png`, `cp3_dependence_vs_gam.png` — figures 1 to 6.
+
+Runtime is about 2 to 4 minutes on an Apple silicon laptop (reading the three sets and refitting the
+Checkpoint 2 GAM on set-a for the comparison figure take most of it); the first run also spends a few
+minutes installing the pixi environment. Bootstrap seeds are fixed, and two runs give byte-identical
+`checkpoint3.html` and `report.md` and leave `git status` clean. The run was also checked in a fresh
+clone of this repository with `data/` placed at the repository root.

@@ -1,0 +1,17 @@
+/data
+output/*
+!output/checkpoint3.html
+!output/report.md
+!output/cp3_roc_bc.png
+!output/cp3_pr_curve_b.png
+!output/cp3_calibration.png
+!output/cp3_decision_curve_b.png
+!output/cp3_shap_importance.png
+!output/cp3_dependence_vs_gam.png
+!output/cp3_discrimination.csv
+!output/cp3_calibration.csv
+!output/cp3_subgroups_b.csv
+!output/cp3_predictions_bc.csv
+.pixi/
+__pycache__/
+.ipynb_checkpoints/
