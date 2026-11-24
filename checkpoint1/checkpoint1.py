@@ -18,6 +18,9 @@ from tableone import TableOne
 
 ROOT = Path(__file__).resolve().parent
 DATA = ROOT / "data"
+# Use data/ at the repository root when checkpoint1/data/ is not there.
+if not (DATA / "Outcomes-a.txt").exists() and (ROOT.parent / "data" / "Outcomes-a.txt").exists():
+    DATA = ROOT.parent / "data"
 OUT = ROOT / "output"
 EXPECTED_N = 4000
 

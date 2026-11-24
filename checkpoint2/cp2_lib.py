@@ -30,6 +30,16 @@ N_FOLDS_INNER = 4
 DATA = Path("data")
 OUT = Path("output")
 
+
+def find_data_dir() -> Path:
+    """checkpoint2/data/ if it holds set-a, otherwise data/ at the repository root."""
+    for candidate in (Path("data"), Path("..") / "data"):
+        if (candidate / "set-a").is_dir() and (candidate / "Outcomes-a.txt").is_file():
+            return candidate
+    raise FileNotFoundError(
+        "set-a and Outcomes-a.txt not found: place them in checkpoint2/data/ or in data/ at the repository root"
+    )
+
 STATIC_VARS = ["RecordID", "Age", "Gender", "Height", "ICUType", "Weight"]
 
 # Never predictors: they describe what happened after the 48 h window.

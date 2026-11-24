@@ -20,4 +20,10 @@ statsmodels = ">=0.15.0,<0.16"
 shap = ">=0.50.0,<0.53"
 
 [tasks]
+# Each task can be run from the repository root with data/ placed at the root.
+# Checkpoint 1 needs packages (seaborn, missingno, tableone) that are not in this environment,
+# so it runs in its own locked environment in checkpoint1/.
+checkpoint1 = { cmd = "pixi run --locked --manifest-path pixi.toml checkpoint1", cwd = "checkpoint1" }
+# The packages in checkpoint2/pixi.lock are all in this lock file at the same versions.
+checkpoint2 = { cmd = "python build_report.py", cwd = "checkpoint2" }
 checkpoint3 = { cmd = "python build_report.py", cwd = "checkpoint3" }

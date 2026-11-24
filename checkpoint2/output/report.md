@@ -327,13 +327,13 @@ each).
 
 **Table 5. The five folds used by every model**
 
-| survived | died | total | deaths (%) |
-| --- | --- | --- | --- |
-| 690 | 110 | 800 | 13.75 |
-| 689 | 111 | 800 | 13.88 |
-| 689 | 111 | 800 | 13.88 |
-| 689 | 111 | 800 | 13.88 |
-| 689 | 111 | 800 | 13.88 |
+| fold | survived | died | total | deaths (%) |
+| --- | --- | --- | --- | --- |
+| fold 1 | 690 | 110 | 800 | 13.75 |
+| fold 2 | 689 | 111 | 800 | 13.88 |
+| fold 3 | 689 | 111 | 800 | 13.88 |
+| fold 4 | 689 | 111 | 800 | 13.88 |
+| fold 5 | 689 | 111 | 800 | 13.88 |
 
 ## 4. Model 1: regularised logistic regression (LASSO)
 
@@ -378,7 +378,7 @@ Mean AUROC 0.833 (SD 0.020); out-of-fold log loss 0.3087; Brier score 0.0939
 | 0.0010 | 0.6931 |
 
 Table 6 shows the per-fold AUROC required by the checklist: mean **0.833** with SD **0.020**, and
-the fold-to-fold spread (0.805 to 0.863) is larger than the difference between the three models.
+the fold-to-fold spread (0.805 to 0.862) is larger than the difference between the three models.
 Table 7 shows why `C = 0.1` was chosen. The minimum is interior, not at the edge of the grid:
 mean inner log loss is 0.305 at `C = 0.1`, 0.312 at 0.32 and 0.315 at 0.03, and it degrades at
 both ends (0.322 at `C = 1`, 0.355 at `C = 0.01`).
@@ -549,7 +549,7 @@ median. What each curve shows, and whether it makes clinical sense:
   GAM.
 * **BUN_last** rises with urea (OR 2.47, 1.24 to 4.93, at 51 versus 19 mg/dL), monotone, consistent
   with renal failure and with the positive `BUN_min` coefficient in Model 1.
-* **Lactate_max** is nearly flat (OR 1.12, 0.55 to 2.27, at 5.8 versus 2.3 mmol/L). This is
+* **Lactate_max** is nearly flat (OR 1.11, 0.55 to 2.27, at 5.8 versus 2.3 mmol/L). This is
   surprising given the literature, and I read it as a limitation of the data rather than evidence
   that lactate is unimportant: 45% of stays have no lactate, the median-imputed values pull the
   curve toward the middle, and lactate is strongly correlated with BUN and creatinine, which are

@@ -387,7 +387,7 @@ subgroups are small (CSRU has only 34 deaths, under-50s 68), so any single diffe
 judged against its interval and against the number of comparisons.
 
 * **Age.** The AUROC falls from about 0.90 under 50 to about 0.83 at 65 and over, and the
-  intervals for the youngest and the two oldest groups only just touch. This is the one pattern I
+  intervals for the youngest and the two oldest groups do not overlap. This is the one pattern I
   consider real. It is also expected: age is itself a strong predictor, and within an older band
   the patients are more alike in the rest of their physiology, so ranking them is harder. Mean
   predicted risk follows observed mortality closely in every age group (all four intercept

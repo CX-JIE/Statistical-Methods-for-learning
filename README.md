@@ -6,7 +6,7 @@ This repository is for BIOSTAT 707 programming assignments. Each checkpoint live
 .
 ├── README.md
 ├── .gitignore              (ignores data/, .pixi/ and .DS_Store)
-├── pixi.toml / pixi.lock   (root task: pixi run --locked checkpoint3)
+├── pixi.toml / pixi.lock   (root tasks: pixi run --locked checkpoint1 / checkpoint2 / checkpoint3)
 ├── checkpoint1/            Checkpoint 1: data cleaning and exploration of set-a
 ├── checkpoint2/            Checkpoint 2: three models compared by cross-validation on set-a
 └── checkpoint3/            Checkpoint 3: the Checkpoint 2 final model evaluated on set-b and set-c
@@ -20,10 +20,22 @@ Checkpoint 2's table-building code, as the checklist requires; see the Checkpoin
 
 Each written report begins with an AI-use statement and follows the checklist section by section.
 
+**Grader quick start.** Put the data in `data/` at the repository root (`data/set-a/`, `data/set-b/`,
+`data/set-c/`, `data/Outcomes-{a,b,c}.txt`) and run one command per checkpoint from the repository root:
+
+```bash
+pixi run --locked checkpoint1
+pixi run --locked checkpoint2
+pixi run --locked checkpoint3
+```
+
+Each checkpoint also looks for its data in its own folder first (`checkpoint1/data/`, `checkpoint2/data/`,
+`checkpoint3/data/`) and falls back to `data/` at the repository root.
+
 | Checkpoint | Folder | Written report | Command |
 | --- | --- | --- | --- |
-| 1 | `checkpoint1/` | `checkpoint1/output/` (`checkpoint1_writeup.md` plus tables) | `cd checkpoint1 && pixi run --locked checkpoint1` |
-| 2 | `checkpoint2/` | `checkpoint2/output/checkpoint2.html`, readable copy in `checkpoint2/output/report.md` | `cd checkpoint2 && pixi run --locked checkpoint2` |
+| 1 | `checkpoint1/` | `checkpoint1/output/` (`checkpoint1_writeup.md` plus tables) | `pixi run --locked checkpoint1` (repository root) or `cd checkpoint1 && pixi run --locked checkpoint1` |
+| 2 | `checkpoint2/` | `checkpoint2/output/checkpoint2.html`, readable copy in `checkpoint2/output/report.md` | `pixi run --locked checkpoint2` (repository root) or `cd checkpoint2 && pixi run --locked checkpoint2` |
 | 3 | `checkpoint3/` | `checkpoint3/output/checkpoint3.html`, readable copy in `checkpoint3/output/report.md` | `pixi run --locked checkpoint3` (repository root) or `cd checkpoint3 && pixi run --locked checkpoint3` |
 
 ## Checkpoint 1
@@ -35,7 +47,9 @@ cd checkpoint1
 pixi run --locked checkpoint1
 ```
 
-This requires `data/set-a/` (4000 records) and `data/Outcomes-a.txt` to already be in place inside `checkpoint1/`. The script writes `output/set-a_long.csv`, `output/set-a_wide.csv`, `output/table1.csv`, `output/outcomes.csv`, `output/missingness_map.png`, and `output/missingness_vs_death.csv`. Interpretation is in `checkpoint1/checkpoint1_writeup.md`.
+From the repository root, `pixi run --locked checkpoint1` does the same thing (the root task runs the
+Checkpoint 1 task in its own locked environment in `checkpoint1/`). This requires `data/set-a/` (4000 records)
+and `data/Outcomes-a.txt`, either inside `checkpoint1/data/` or in `data/` at the repository root. The script writes `output/set-a_long.csv`, `output/set-a_wide.csv`, `output/table1.csv`, `output/outcomes.csv`, `output/missingness_map.png`, and `output/missingness_vs_death.csv`. Interpretation is in `checkpoint1/checkpoint1_writeup.md`.
 
 ## Checkpoint 2
 
@@ -46,7 +60,10 @@ cd checkpoint2
 pixi run --locked checkpoint2
 ```
 
-This requires `data/set-a/` (4000 records) and `data/Outcomes-a.txt` to already be in place inside `checkpoint2/` (for example `cp -R ../checkpoint1/data ./data`). The pixi task runs `build_report.py`, which executes `checkpoint2.ipynb` once and writes the report in two forms: `output/checkpoint2.html` (the rendered notebook, the format the checklist asks for) and `output/report.md` (the same text as plain Markdown, without code cells, so it reads start to finish in an editor or on the repository page). The committed notebook has its outputs stripped, so the HTML and the Markdown file are the readable versions.
+From the repository root, `pixi run --locked checkpoint2` runs the same script inside `checkpoint2/` with
+the root environment, which contains every package in `checkpoint2/pixi.lock` at the same version. This
+requires `data/set-a/` (4000 records) and `data/Outcomes-a.txt`, either inside `checkpoint2/data/` or in
+`data/` at the repository root (`checkpoint2/data/` is used if both exist). The pixi task runs `build_report.py`, which executes `checkpoint2.ipynb` once and writes the report in two forms: `output/checkpoint2.html` (the rendered notebook, the format the checklist asks for) and `output/report.md` (the same text as plain Markdown, without code cells, so it reads start to finish in an editor or on the repository page). The committed notebook has its outputs stripped, so the HTML and the Markdown file are the readable versions.
 
 To read the report, open `output/report.md` (Markdown preview, or the repository page) or `output/checkpoint2.html` in a browser. Both are regenerated by the one command above; do not edit them by hand.
 
